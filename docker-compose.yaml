@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  brocker-service:
+    build:
+      context: ./brocker
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1

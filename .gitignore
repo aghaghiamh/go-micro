@@ -50,3 +50,5 @@ go.work
 
 frontendApp
 brokerApp
+authApp
+db-data

@@ -11,3 +11,33 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+
+  auth-service:
+    build:
+      context: ./authentication
+      dockerfile: Dockerfile
+    ports:
+      - "8081:80"
+    restart: always
+    depends_on:
+      - auth_db
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      DSN: "host=postgres port=5432 user=postgres password=password dbname=users ssl=disable connect_timeout=5"
+
+  auth_db:
+    image: postgres:17.2-alpine
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: users
+    deploy:
+      mode: replicated
+      replicas: 1
+    volumes:
+      - ./db-data/postgres/:/var/lib/postgresql/data/

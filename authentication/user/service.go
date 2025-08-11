@@ -41,7 +41,7 @@ func (svc Service) passwordMatches(providedPass, savedPass string) (bool, error)
 
 			return false, nil
 		}
-		
+
 		log.Println(err)
 		return false, err
 	}

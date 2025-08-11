@@ -11,7 +11,7 @@ import (
 type JsonResponse struct {
 	Error   error  `json:"error"`
 	Message string `json:"message"`
-	Details string `json:"details,omitempty"`
+	Data    string `json:"data,omitempty"`
 }
 
 func (app *App) Authenticate(wr http.ResponseWriter, r *http.Request) {

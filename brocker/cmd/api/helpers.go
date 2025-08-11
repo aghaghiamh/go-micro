@@ -42,8 +42,10 @@ func (app *App) writeJson(wr http.ResponseWriter, data any, status int, headers 
 		return err
 	}
 
-	for key, val := range headers[0] {
-		wr.Header()[key] = val
+	if len(headers) > 0 {
+		for key, val := range headers[0] {
+			wr.Header()[key] = val
+		}
 	}
 
 	wr.Header().Set("Content-Type", "application/json")

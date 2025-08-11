@@ -12,7 +12,7 @@ func main() {
 	app := App{}
 
 	srv := http.Server{
-		Addr: fmt.Sprintf(":%d", webPort),
+		Addr:    fmt.Sprintf(":%d", webPort),
 		Handler: app.SetRouter(),
 	}
 

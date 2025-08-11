@@ -6,7 +6,7 @@ import (
 
 func (app *App) Brocker(wr http.ResponseWriter, r *http.Request) {
 	payload := jsonResponse{
-		Error: false,
+		Error:   false,
 		Message: "Data successfuly received",
 	}
 

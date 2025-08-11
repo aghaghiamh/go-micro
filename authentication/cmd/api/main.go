@@ -2,6 +2,8 @@ package main
 
 import (
 	"auth/data/adaptor"
+	data "auth/data/repository"
+	"auth/user"
 	"fmt"
 	"log"
 	"net/http"
@@ -11,15 +13,17 @@ import (
 const webPort = "80"
 
 type App struct {
-	DB *adaptor.PostgresDB
+	Svc *user.Service
 }
 
 func main() {
 	conn := adaptor.Retry(adaptor.OpenDB, 10, 2*time.Second)()
+	userRepo := data.NewUserRepo(conn)
 
+	userService := user.New(userRepo)
 	log.Println("Starting authentication service...")
 	app := App{
-		DB: conn,
+		Svc: userService,
 	}
 
 	srv := http.Server{

@@ -15,9 +15,9 @@ type PostgresDB struct {
 	db *sql.DB
 }
 
-type Effector func() *PostgresDB
+type Effector func() *sql.DB
 
-func OpenDB() *PostgresDB {
+func OpenDB() *sql.DB {
 	// TODO: Add DSN (Data Source Name) to Config
 	db, openErr := sql.Open("pgx", os.Getenv("DATABASE_URL"))
 	if openErr != nil {
@@ -28,16 +28,15 @@ func OpenDB() *PostgresDB {
 	pErr := db.Ping()
 	if pErr != nil {
 		log.Printf("couldn't ping database: %s", pErr.Error())
+		db.Close()
 		return nil
 	}
 
-	return &PostgresDB{
-		db: db,
-	}
+	return db
 }
 
 func Retry(effector Effector, retries int, delay time.Duration) Effector {
-	return func() *PostgresDB {
+	return func() *sql.DB {
 		for r := 0; ; r++ {
 			connectedDB := effector()
 
@@ -46,10 +45,7 @@ func Retry(effector Effector, retries int, delay time.Duration) Effector {
 			}
 
 			log.Printf("Attempt %d failed; Postgres is not yet ready; retrying in %v", r+1, delay)
-			select {
-			case <-time.After(delay):
-				return nil
-			}
+			<-time.After(delay)
 		}
 	}
 }

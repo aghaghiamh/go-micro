@@ -9,13 +9,11 @@ import (
 	"net/http"
 )
 
-
 type jsonResponse struct {
-	Error bool `json:"error"`
+	Error   bool   `json:"error"`
 	Message string `json:"message"`
-	Data any `json:"data,omitempty"`
+	Data    any    `json:"data,omitempty"`
 }
-
 
 func (app *App) readJson(wr http.ResponseWriter, r *http.Request, data any) error {
 	maxBytes := math.Pow(2, 20) // one megabyte
@@ -34,7 +32,7 @@ func (app *App) readJson(wr http.ResponseWriter, r *http.Request, data any) erro
 		log.Println(err.Error())
 		return err
 	}
-	
+
 	return nil
 }
 
@@ -66,7 +64,7 @@ func (app *App) errorJson(wr http.ResponseWriter, pErr error, status ...int) err
 	}
 
 	payload := jsonResponse{
-		Error: true,
+		Error:   true,
 		Message: pErr.Error(),
 	}
 

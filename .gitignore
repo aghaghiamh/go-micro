@@ -53,3 +53,4 @@ brokerApp
 authApp
 db-data
 *.http
+*.env

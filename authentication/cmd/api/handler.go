@@ -36,7 +36,7 @@ func (app *App) Authenticate(wr http.ResponseWriter, r *http.Request) {
 
 	if svcErr != nil {
 		log.Print("handler error: ", svcErr)
-		tools.ErrorJSON(wr, svcErr, http.StatusNotFound)
+		tools.ErrorJSON(wr, svcErr, http.StatusUnauthorized)
 
 		return
 	}

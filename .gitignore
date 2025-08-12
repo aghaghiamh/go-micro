@@ -52,3 +52,4 @@ frontendApp
 brokerApp
 authApp
 db-data
+*.http

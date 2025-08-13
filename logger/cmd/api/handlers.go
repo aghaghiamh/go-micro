@@ -32,7 +32,7 @@ func (app *App) WriteLog(wr http.ResponseWriter, r *http.Request) {
 	}
 
 	resp := toolbox.JSONResponse{
-		Error: false,
+		Error:   false,
 		Message: "logged",
 	}
 	tools.WriteJSON(wr, http.StatusOK, resp)

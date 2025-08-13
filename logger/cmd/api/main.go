@@ -57,16 +57,17 @@ func (app *App) serve() {
 	}
 }
 
-func loadConfig() Config{
-	if err := godotenv.Load(".env"); err != nil {
-		log.Fatal("Error loading .env file")
+func loadConfig() Config {
+	if err := godotenv.Load(".env"); err != nil && !os.IsNotExist(err) {
+		log.Fatal("Error loading .env file", err)
 	}
 
 	return Config{
-		mongo: adaptor.MongoConfig {
-			URI: os.Getenv("MONGO_URI"),
-			Username: os.Getenv("MONGO_USERNAME"),
-			Password: os.Getenv("MONGO_PASSWORD"),
+		mongo: adaptor.MongoConfig{
+			MongoAddress: os.Getenv("MONGO_ADDRESS"),
+			Username:     os.Getenv("ROOT_USERNAME"),
+			Password:     os.Getenv("ROOT_PASSWORD"),
+			DB:           os.Getenv("DATABASE"),
 		},
 	}
 }

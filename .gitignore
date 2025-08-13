@@ -51,6 +51,7 @@ go.work
 frontendApp
 brokerApp
 authApp
+loggerApp
 db-data
 *.http
 *.env

@@ -12,6 +12,17 @@ services:
       mode: replicated
       replicas: 1
 
+  logger-service:
+    build:
+      context: ./logger
+      dockerfile: Dockerfile
+    env_file:
+      - ./logger/.env
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+
   auth-service:
     build:
       context: ./authentication
@@ -41,3 +52,13 @@ services:
       replicas: 1
     volumes:
       - ./db-data/postgres/:/var/lib/postgresql/data/
+
+  logger_mongo_db:
+    image: mongo:8.0.12-noble
+    ports:
+      - "27017:27017"
+    env_file:
+      - ./logger/.env
+    volumes:
+      - ./db-data/mongo/:/data/db
+

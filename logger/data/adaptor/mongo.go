@@ -2,6 +2,7 @@ package adaptor
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -10,13 +11,15 @@ import (
 )
 
 type MongoConfig struct {
-	URI 	 string
-	Username string
-	Password string
+	DB           string
+	MongoAddress string
+	Username     string
+	Password     string
 }
 
 func ConnectToMongo(conf MongoConfig) (*mongo.Client, error) {
-	clientOptions := options.Client().ApplyURI(conf.URI)
+	clientOptions := options.Client().ApplyURI(fmt.Sprintf(
+		"mongodb://%s/%s?authSource=admin", conf.MongoAddress, conf.DB))
 	clientOptions.SetAuth(options.Credential{
 		Username: conf.Username,
 		Password: conf.Password,
@@ -27,6 +30,8 @@ func ConnectToMongo(conf MongoConfig) (*mongo.Client, error) {
 		log.Println("Err connecting Mongodb: ", err)
 		return nil, err
 	}
+	
+	log.Println("✅ Successfully connected to MongoDB!")
 	return client, nil
 }
 

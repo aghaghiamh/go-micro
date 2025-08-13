@@ -25,8 +25,8 @@ func (r *LogRepo) Insert(dlog domain.LogEntry) error {
 	collection := r.client.Database("logs").Collection("logs")
 
 	_, inErr := collection.InsertOne(context.TODO(), LogEntry{
-		Name: dlog.Name,
-		Data: dlog.Data,
+		Name:      dlog.Name,
+		Data:      dlog.Data,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	})
@@ -64,7 +64,7 @@ func (r *LogRepo) All() ([]*domain.LogEntry, error) {
 			return nil, dErr
 		}
 		logs = append(logs, &domain.LogEntry{
-			ID: logItem.ID,
+			ID:   logItem.ID,
 			Name: logItem.Name,
 			Data: logItem.Data,
 		})

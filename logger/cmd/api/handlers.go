@@ -35,5 +35,5 @@ func (app *App) WriteLog(wr http.ResponseWriter, r *http.Request) {
 		Error:   false,
 		Message: "logged",
 	}
-	tools.WriteJSON(wr, http.StatusOK, resp)
+	tools.WriteJSON(wr, http.StatusAccepted, resp)
 }

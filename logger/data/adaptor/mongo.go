@@ -30,7 +30,7 @@ func ConnectToMongo(conf MongoConfig) (*mongo.Client, error) {
 		log.Println("Err connecting Mongodb: ", err)
 		return nil, err
 	}
-	
+
 	log.Println("✅ Successfully connected to MongoDB!")
 	return client, nil
 }

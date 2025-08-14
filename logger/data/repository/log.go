@@ -30,7 +30,6 @@ func (r *LogRepo) Insert(dlog domain.LogEntry) error {
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	})
-
 	if inErr != nil {
 		log.Println("Error insering into logs: ", inErr)
 		return inErr

@@ -26,9 +26,44 @@ func (app *App) HandleSubmission(wr http.ResponseWriter, r *http.Request) {
 	switch requestPayload.Action {
 	case "auth":
 		app.authenticate(wr, &requestPayload.Auth)
+	case "log":
+		app.logItem(wr, &requestPayload.Log)
 	default:
 		app.errorJson(wr, fmt.Errorf("%s is not a valid action", requestPayload.Action), http.StatusBadRequest)
 	}
+}
+
+func (app *App) logItem(wr http.ResponseWriter, logPayload *LogPayload) {
+	jsonData, _ := json.MarshalIndent(logPayload, "", "\t")
+
+	logServiceURL := "http://logger-service/log"
+	request, reqErr := http.NewRequest("POST", logServiceURL, bytes.NewBuffer(jsonData))
+	if reqErr != nil {
+		app.errorJson(wr, reqErr)
+		return
+	}
+	request.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	response, respErr := client.Do(request)
+	if respErr != nil {
+		app.errorJson(wr, respErr)
+		return
+	}
+	defer response.Body.Close()
+
+	// in case of error, return correct status code
+	if response.StatusCode != http.StatusAccepted {
+		app.errorJson(wr, fmt.Errorf("error calling log service "), http.StatusBadRequest)
+		return
+	}
+
+	// on success: logger-service does not return any data on success therefore no extra work is needed
+	payload := jsonResponse{
+		Error:   false,
+		Message: "Broker MSG Logged!",
+	}
+	app.writeJson(wr, payload, http.StatusAccepted)
 }
 
 func (app *App) authenticate(wr http.ResponseWriter, authPayload *AuthPayload) {

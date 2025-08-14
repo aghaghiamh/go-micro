@@ -1,6 +1,8 @@
 package repository
 
-import "time"
+import (
+	"time"
+)
 
 type LogEntry struct {
 	ID        string    `bson:"_id,omitempty"`

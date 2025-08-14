@@ -64,10 +64,10 @@ func loadConfig() Config {
 
 	return Config{
 		mongo: adaptor.MongoConfig{
+			Username:     os.Getenv("MONGO_INITDB_ROOT_USERNAME"),
+			Password:     os.Getenv("MONGO_INITDB_ROOT_PASSWORD"),
 			MongoAddress: os.Getenv("MONGO_ADDRESS"),
-			Username:     os.Getenv("ROOT_USERNAME"),
-			Password:     os.Getenv("ROOT_PASSWORD"),
-			DB:           os.Getenv("DATABASE"),
+			DB:           os.Getenv("MONGO_INITDB_DATABASE"),
 		},
 	}
 }

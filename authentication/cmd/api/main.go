@@ -14,6 +14,7 @@ const webPort = "80"
 
 type App struct {
 	Svc *user.Service
+	logSvcURL string
 }
 
 func main() {
@@ -24,6 +25,7 @@ func main() {
 	log.Println("Starting authentication service...")
 	app := App{
 		Svc: userService,
+		logSvcURL: "http://logger-service/log",
 	}
 
 	srv := http.Server{

@@ -53,5 +53,6 @@ brokerApp
 authApp
 loggerApp
 db-data
+readme.md
 *.http
 *.env

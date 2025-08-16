@@ -1,7 +1,11 @@
 package main
 
 import (
+	"auth/domain"
 	"auth/user"
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -33,7 +37,6 @@ func (app *App) Authenticate(wr http.ResponseWriter, r *http.Request) {
 		Email:    authRequest.Email,
 		Password: authRequest.Password,
 	})
-
 	if svcErr != nil {
 		log.Print("handler error: ", svcErr)
 		tools.ErrorJSON(wr, svcErr, http.StatusUnauthorized)
@@ -41,8 +44,36 @@ func (app *App) Authenticate(wr http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	logErr := app.writeLog(domain.LogEntry{
+		Name: "Authentication",
+		Data: fmt.Sprintf("%s logged in", authRequest.Email),
+	})
+	if logErr != nil {
+		tools.ErrorJSON(wr, logErr)
+	}
+
 	tools.WriteJSON(wr, http.StatusAccepted, JsonResponse{
 		Error:   nil,
 		Message: "successfully authenticated!",
 	})
+}
+
+func (app *App) writeLog(logEntry domain.LogEntry) error {
+	jsonData, _ := json.MarshalIndent(logEntry, "", "\t")
+
+
+	request, reqErr := http.NewRequest("POST", app.logSvcURL, bytes.NewBuffer(jsonData))
+	if reqErr != nil {
+		log.Println("Err: Couldn't create new request: ", reqErr, http.StatusInternalServerError)
+		return reqErr
+	}
+
+	client := http.Client{}
+	_, respErr := client.Do(request)
+	if respErr != nil {
+		log.Println("Err: Couldn't aggregate log inside log-service: ", respErr)
+		return respErr
+	}
+
+	return nil
 }

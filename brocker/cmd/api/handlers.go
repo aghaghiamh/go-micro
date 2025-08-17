@@ -28,6 +28,8 @@ func (app *App) HandleSubmission(wr http.ResponseWriter, r *http.Request) {
 		app.authenticate(wr, &requestPayload.Auth)
 	case "log":
 		app.logItem(wr, &requestPayload.Log)
+	case "mail":
+		app.sendMail(wr, &requestPayload.Mail)
 	default:
 		app.errorJson(wr, fmt.Errorf("%s is not a valid action", requestPayload.Action), http.StatusBadRequest)
 	}
@@ -113,5 +115,38 @@ func (app *App) authenticate(wr http.ResponseWriter, authPayload *AuthPayload) {
 		Data:    jsonFromService.Data,
 	}
 
+	app.writeJson(wr, payload, http.StatusAccepted)
+}
+
+func (app *App) sendMail(wr http.ResponseWriter, mailPayload *MailPayload) {
+	// create json to send
+	jsonData, _ := json.MarshalIndent(mailPayload, "", "\t")
+
+	// call the auth service
+	request, reqErr := http.NewRequest("POST", "http://mailer-service/send", bytes.NewBuffer(jsonData))
+	if reqErr != nil {
+		app.errorJson(wr, reqErr)
+		return
+	}
+
+	client := &http.Client{}
+	response, respErr := client.Do(request)
+	if respErr != nil {
+		app.errorJson(wr, respErr)
+		return
+	}
+	defer response.Body.Close()
+
+	// in case of error, return correct status code
+	if response.StatusCode != http.StatusOK {
+		app.errorJson(wr, fmt.Errorf("error calling mailer service "), http.StatusBadRequest)
+		return
+	}
+
+	// on success: mailer-service does not return any data on success therefore no extra work is needed
+	payload := jsonResponse{
+		Error:   false,
+		Message: "Mail Sent",
+	}
 	app.writeJson(wr, payload, http.StatusAccepted)
 }

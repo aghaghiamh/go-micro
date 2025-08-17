@@ -69,3 +69,13 @@ services:
       - "8025:8025"
     restart: always
 
+  mailer-service:
+    build:
+      context: ./mailer
+      dockerfile: Dockerfile
+    env_file:
+      - ./mailer/.env
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1

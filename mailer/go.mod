@@ -7,6 +7,8 @@ toolchain go1.24.6
 require (
 	github.com/go-chi/chi/v5 v5.2.2
 	github.com/go-chi/cors v1.2.2
+	github.com/joho/godotenv v1.5.1
+	github.com/tsawler/toolbox v1.3.1
 	github.com/vanng822/go-premailer v1.25.0
 	github.com/xhit/go-simple-mail/v2 v2.16.0
 )

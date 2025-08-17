@@ -8,11 +8,17 @@ import (
 	"time"
 
 	"github.com/vanng822/go-premailer/premailer"
-	"github.com/xhit/go-simple-mail/v2"
+	mail "github.com/xhit/go-simple-mail/v2"
 )
 
 type Service struct {
-	Email domain.Email
+	Email domain.EmailServer
+}
+
+func New(email domain.EmailServer) Service {
+	return Service{
+		Email: email,
+	}
 }
 
 func (svc *Service) SendSMTPMessage(msg domain.Message) error {

@@ -1,6 +1,6 @@
 package domain
 
-type Email struct {
+type EmailServer struct {
 	Domain      string
 	Host        string
 	Port        int

@@ -13,7 +13,7 @@ import (
 const webPort = "80"
 
 type App struct {
-	Svc *user.Service
+	Svc       *user.Service
 	logSvcURL string
 }
 
@@ -24,7 +24,7 @@ func main() {
 	userService := user.New(userRepo)
 	log.Println("Starting authentication service...")
 	app := App{
-		Svc: userService,
+		Svc:       userService,
 		logSvcURL: "http://logger-service/log",
 	}
 

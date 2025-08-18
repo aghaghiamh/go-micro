@@ -61,7 +61,6 @@ func (app *App) Authenticate(wr http.ResponseWriter, r *http.Request) {
 func (app *App) writeLog(logEntry domain.LogEntry) error {
 	jsonData, _ := json.MarshalIndent(logEntry, "", "\t")
 
-
 	request, reqErr := http.NewRequest("POST", app.logSvcURL, bytes.NewBuffer(jsonData))
 	if reqErr != nil {
 		log.Println("Err: Couldn't create new request: ", reqErr, http.StatusInternalServerError)

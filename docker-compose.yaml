@@ -79,3 +79,14 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+
+  rabbitmq:
+    image: rabbitmq:4.1-management-alpine
+    restart: always
+    ports:
+      - "5672:5672"
+    deploy:
+      mode: replicated
+      replicas: 1
+    volumes:
+      - ./db-data/rabbitmq/:/var/lib/rabbitmq/

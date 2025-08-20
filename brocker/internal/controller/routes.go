@@ -1,4 +1,4 @@
-package main
+package controller
 
 import (
 	messagebroker "brocker/internal/message_broker"
@@ -11,6 +11,12 @@ import (
 
 type App struct {
 	rabbitmqClient *messagebroker.Client
+}
+
+func NewApp(msgBrokerClient *messagebroker.Client) App {
+	return App{
+		rabbitmqClient: msgBrokerClient,
+	}
 }
 
 func (app *App) SetRouter() http.Handler {

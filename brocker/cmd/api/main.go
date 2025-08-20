@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"brocker/internal/controller"
 	messagebroker "brocker/internal/message_broker"
 	"brocker/utils"
 
@@ -30,9 +31,7 @@ func main() {
 	}
 	defer client.Close()
 
-	app := App{
-		rabbitmqClient: client,
-	}
+	app := controller.NewApp(client) 
 
 	srv := http.Server{
 		Addr:    fmt.Sprintf(":%d", webPort),

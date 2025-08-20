@@ -1,6 +1,7 @@
 package main
 
 import (
+	messagebroker "brocker/internal/message_broker"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -9,6 +10,7 @@ import (
 )
 
 type App struct {
+	rabbitmqClient *messagebroker.Client
 }
 
 func (app *App) SetRouter() http.Handler {

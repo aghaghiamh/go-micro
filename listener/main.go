@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"listener/internal/event"
 	"listener/internal/messagebroker"
 	"listener/utils"
 	"log"
@@ -25,11 +27,28 @@ func main() {
 	}
 	defer client.Close()
 
-	// Listen for messages
-
 	// Create Consumer
+	eventHandler, eventErr := event.NewEventHandler(client)
+	if eventErr != nil {
+		log.Fatal("Couldn't create rabbitmq event listener: ", eventErr)
+	}
+	defer eventHandler.Close()
+
+	eventHandler.RegisterHandler("log.INFO", event.HandleLogMessage)
+	eventHandler.RegisterHandler("log.WARN", event.HandleLogMessage)
+
+	setupErr := eventHandler.SetupExchangeAndQueue("events", "logs", []string{
+		"log.INFO", "log.WARN",
+	})
+	if setupErr != nil {
+		log.Fatal("Couldn't setup exchange and queues: ", setupErr)
+	}
 
 	// Watch the queue and consume events
+	ctx := context.Background()
+	if err := eventHandler.Listen(ctx, "logs"); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func loadConfig() Config {

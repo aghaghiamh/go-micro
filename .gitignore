@@ -53,6 +53,7 @@ brokerApp
 authApp
 loggerApp
 mailerApp
+listenerApp
 db-data
 readme.md
 *.http

@@ -3,6 +3,7 @@ BROKER_BINARY=brokerApp
 AUTH_BINARY=authApp
 LOGGER_BINARY=loggerApp
 MAILER_BINARY=mailerApp
+LISTENER_BINARY=listenerApp
 
 ## up: start all containers in the backgroung without forcing build
 up:
@@ -17,7 +18,7 @@ down:
 	@echo "Done!"
 
 ## up-build: stops docker-compose (if running), builds all projects images and starts docker-compose
-up-build: build_brocker build_auth build_logger build_mailer
+up-build: build_brocker build_auth build_logger build_mailer build_listener
 	@echo "Stopping docker containers (if running...)"
 	docker-compose down
 	@echo "Building (when required) and starting docker images..."
@@ -46,6 +47,12 @@ build_logger:
 build_mailer:
 	@echo "Building mailer binary..."
 	cd ./mailer && env GOOS=linux CGO_ENABLED=0 go build -o ${MAILER_BINARY} ./cmd/api
+	@echo "Built"
+
+## build_listener: builds the listener binary as a linux executable
+build_listener:
+	@echo "Building listener binary..."
+	cd ./listener && env GOOS=linux CGO_ENABLED=0 go build -o ${LISTENER_BINARY} .
 	@echo "Built"
 
 ## build_frontend: builds the frontend binary as a linux executable

@@ -5,6 +5,8 @@ services:
     build:
       context: ./brocker
       dockerfile: Dockerfile
+    env_file:
+      - ./brocker/.env
     ports:
       - "8080:80"
     restart: always
@@ -85,6 +87,7 @@ services:
     restart: always
     ports:
       - "5672:5672"
+      - "15672:15672"
     deploy:
       mode: replicated
       replicas: 1

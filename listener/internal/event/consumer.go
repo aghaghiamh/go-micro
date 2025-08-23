@@ -103,6 +103,8 @@ func (event EventHandler) proccessMessage(ctx context.Context, msg amqp.Delivery
 		MessageID:  msg.MessageId,
 	}
 
+	log.Printf("successfully received message for %s topic and RoutingKey: %s\n", msg.Exchange, msg.RoutingKey)
+
 	// Find appropriate handler
 	handler, exists := event.handlers[msg.RoutingKey]
 	if !exists {

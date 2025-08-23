@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"brocker/internal/events"
 	messagebroker "brocker/internal/message_broker"
 	"net/http"
 
@@ -11,11 +12,13 @@ import (
 
 type App struct {
 	rabbitmqClient *messagebroker.Client
+	eventService   events.EventService
 }
 
-func NewApp(msgBrokerClient *messagebroker.Client) App {
+func NewApp(msgBrokerClient *messagebroker.Client, eventService events.EventService) App {
 	return App{
 		rabbitmqClient: msgBrokerClient,
+		eventService:   eventService,
 	}
 }
 

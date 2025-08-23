@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"brocker/internal/controller"
+	"brocker/internal/events"
 	messagebroker "brocker/internal/message_broker"
 	"brocker/utils"
 
@@ -16,8 +17,9 @@ import (
 const webPort = 80
 
 type Config struct {
-	rabbitmq messagebroker.Config
-	backoff  utils.BackoffConfig
+	rabbitmq  messagebroker.Config
+	backoff   utils.BackoffConfig
+	publisher messagebroker.PublisherConfig
 }
 
 func main() {
@@ -25,13 +27,23 @@ func main() {
 
 	// Connect to RabbitMQ
 	client := messagebroker.NewClient(conf.rabbitmq)
-	err := utils.Backoff(client.Connect, conf.backoff)()
-	if err != nil {
+	if err := utils.Backoff(client.Connect, conf.backoff)(); err != nil {
 		log.Fatal("Couldn't connect to the message queue: ", err)
 	}
 	defer client.Close()
 
-	app := controller.NewApp(client) 
+	// Rabbitmq Publisher
+	publisher, pErr := messagebroker.NewPublisher(client, conf.publisher)
+	if pErr != nil {
+		log.Fatal("Couldn't create message broker publisher", pErr)
+	}
+	if err := publisher.Setup(conf.publisher); err != nil {
+		log.Fatal("Couldn't set up exchange and channel for publisher: ", err)
+	}
+
+	eventSvc := events.NewEventService(publisher, "broker-service")
+
+	app := controller.NewApp(client, *eventSvc)
 
 	srv := http.Server{
 		Addr:    fmt.Sprintf(":%d", webPort),
@@ -59,5 +71,7 @@ func loadConfig() Config {
 			Port:     os.Getenv("RABBIT_PORT"),
 		},
 		backoff: utils.DefaultBackoffConfig(),
+		// TODO: the DefaultPublisher should only be used for testing purpose; for full functionality should be override to get env values.
+		publisher: messagebroker.DefaulPublisherConfig(),
 	}
 }

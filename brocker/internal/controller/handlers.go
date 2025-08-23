@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"brocker/internal/entities"
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -27,7 +29,7 @@ func (app *App) HandleSubmission(wr http.ResponseWriter, r *http.Request) {
 	case "auth":
 		app.authenticate(wr, &requestPayload.Auth)
 	case "log":
-		app.logItem(wr, &requestPayload.Log)
+		app.logEvent(wr, &requestPayload.Log)
 	case "mail":
 		app.sendMail(wr, &requestPayload.Mail)
 	default:
@@ -147,6 +149,29 @@ func (app *App) sendMail(wr http.ResponseWriter, mailPayload *MailPayload) {
 	payload := jsonResponse{
 		Error:   false,
 		Message: "Mail Sent",
+	}
+	app.writeJson(wr, payload, http.StatusAccepted)
+}
+
+func (app *App) logEvent(wr http.ResponseWriter, logPayload *LogPayload) {
+	ctx := context.Background()
+
+	logEntity := entities.LogPayload{
+		Name:  logPayload.Name,
+		Data:  logPayload.Data,
+		Level: logPayload.Level,
+	}
+
+	err := app.eventService.PublishLogEvent(ctx, logEntity)
+	if err != nil {
+		app.errorJson(wr, fmt.Errorf("error calling listener service for publishing logs "), http.StatusBadRequest)
+
+		return
+	}
+
+	payload := jsonResponse{
+		Error:   false,
+		Message: "Broker sned MSG to Listener and Listener Logged it!",
 	}
 	app.writeJson(wr, payload, http.StatusAccepted)
 }

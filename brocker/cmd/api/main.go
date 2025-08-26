@@ -8,6 +8,7 @@ import (
 
 	"brocker/internal/controller"
 	"brocker/internal/events"
+	rpcClient "brocker/internal/client"
 	messagebroker "brocker/internal/message_broker"
 	"brocker/utils"
 
@@ -43,7 +44,14 @@ func main() {
 
 	eventSvc := events.NewEventService(publisher, "broker-service")
 
-	app := controller.NewApp(client, *eventSvc)
+	// RPC Logger
+	loggerRPCClient, loggerRPCErr := rpcClient.NewLoggerRPCClient("logger-service:5001")
+	if loggerRPCErr != nil {
+		// TODO: find a better approach than just failure on one service conenction
+		log.Fatal("Logger RPC client service is not responsive: ", loggerRPCErr)
+	}
+
+	app := controller.NewApp(client, *eventSvc, loggerRPCClient)
 
 	srv := http.Server{
 		Addr:    fmt.Sprintf(":%d", webPort),

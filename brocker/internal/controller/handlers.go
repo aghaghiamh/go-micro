@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"brocker/internal/dto"
 	"brocker/internal/entities"
 	"bytes"
 	"context"
@@ -19,7 +20,7 @@ func (app *App) Brocker(wr http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) HandleSubmission(wr http.ResponseWriter, r *http.Request) {
-	var requestPayload RequestPayload
+	var requestPayload dto.RequestPayload
 	err := app.readJson(wr, r, &requestPayload)
 	if err != nil {
 		app.errorJson(wr, err, http.StatusBadRequest)
@@ -29,7 +30,7 @@ func (app *App) HandleSubmission(wr http.ResponseWriter, r *http.Request) {
 	case "auth":
 		app.authenticate(wr, &requestPayload.Auth)
 	case "log":
-		app.logEvent(wr, &requestPayload.Log)
+		app.logItemRPC(wr, &requestPayload.Log)
 	case "mail":
 		app.sendMail(wr, &requestPayload.Mail)
 	default:
@@ -37,7 +38,7 @@ func (app *App) HandleSubmission(wr http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (app *App) logItem(wr http.ResponseWriter, logPayload *LogPayload) {
+func (app *App) logItem(wr http.ResponseWriter, logPayload *dto.LogPayload) {
 	jsonData, _ := json.MarshalIndent(logPayload, "", "\t")
 
 	logServiceURL := "http://logger-service/log"
@@ -70,7 +71,7 @@ func (app *App) logItem(wr http.ResponseWriter, logPayload *LogPayload) {
 	app.writeJson(wr, payload, http.StatusAccepted)
 }
 
-func (app *App) authenticate(wr http.ResponseWriter, authPayload *AuthPayload) {
+func (app *App) authenticate(wr http.ResponseWriter, authPayload *dto.AuthPayload) {
 	// create json to send
 	jsonData, _ := json.MarshalIndent(authPayload, "", "\t")
 
@@ -120,7 +121,7 @@ func (app *App) authenticate(wr http.ResponseWriter, authPayload *AuthPayload) {
 	app.writeJson(wr, payload, http.StatusAccepted)
 }
 
-func (app *App) sendMail(wr http.ResponseWriter, mailPayload *MailPayload) {
+func (app *App) sendMail(wr http.ResponseWriter, mailPayload *dto.MailPayload) {
 	// create json to send
 	jsonData, _ := json.MarshalIndent(mailPayload, "", "\t")
 
@@ -153,7 +154,7 @@ func (app *App) sendMail(wr http.ResponseWriter, mailPayload *MailPayload) {
 	app.writeJson(wr, payload, http.StatusAccepted)
 }
 
-func (app *App) logEvent(wr http.ResponseWriter, logPayload *LogPayload) {
+func (app *App) logEvent(wr http.ResponseWriter, logPayload *dto.LogPayload) {
 	ctx := context.Background()
 
 	logEntity := entities.LogPayload{
@@ -174,4 +175,23 @@ func (app *App) logEvent(wr http.ResponseWriter, logPayload *LogPayload) {
 		Message: "Broker sned MSG to Listener and Listener Logged it!",
 	}
 	app.writeJson(wr, payload, http.StatusAccepted)
+}
+
+func (app *App) logItemRPC(wr http.ResponseWriter, logPayload *dto.LogPayload) {
+	logRPCRequestPayload := dto.LogRPCRequestPayload{
+		Name: logPayload.Name,
+		Data: logPayload.Data,
+	}
+
+	result, err := app.Logger.Log(logRPCRequestPayload)
+	if err != nil {
+		app.errorJson(wr, err, http.StatusInternalServerError)
+		return
+	}
+
+	payload := jsonResponse{
+		Error: false,
+		Message: result,
+	}
+	app.writeJson(wr, payload, http.StatusOK)
 }

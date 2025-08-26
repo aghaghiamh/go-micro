@@ -5,15 +5,18 @@ import (
 	"log"
 	"log-service/data/adaptor"
 	"log-service/data/repository"
+	"net"
 	"net/http"
+	"net/rpc"
 	"os"
 
-	"log-service/logSvc"
+	logsvc "log-service/logSvc"
 
 	"github.com/joho/godotenv"
 )
 
 const (
+	rpcPort = "5001"
 	webPort = "80"
 )
 
@@ -21,7 +24,7 @@ type Config struct {
 	mongo adaptor.MongoConfig
 }
 
-type App struct {
+type HTTPServer struct {
 	svc *logsvc.Service
 }
 
@@ -37,15 +40,22 @@ func main() {
 	logRepo := repository.New(client)
 	logSvc := logsvc.New(logRepo)
 
-	app := App{
+	app := HTTPServer{
 		svc: logSvc,
 	}
+
+	// Register RPC Server
+	rpcServer := &RPCServer{
+		svc: logSvc,
+	}
+	rpc.Register(rpcServer)
+	go rpcServer.serveRPC()
 
 	// start webserver
 	app.serve()
 }
 
-func (app *App) serve() {
+func (app *HTTPServer) serve() {
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", webPort),
 		Handler: app.SetRoutes(),
@@ -54,6 +64,24 @@ func (app *App) serve() {
 	log.Printf("The server is now running on %s Address.", srv.Addr)
 	if err := srv.ListenAndServe(); err != nil {
 		log.Fatalf("Because of the following error, server had to stopped: %s", err)
+	}
+}
+
+func (r *RPCServer) serveRPC() {
+	RPCAddress := fmt.Sprintf("0.0.0.0:%s", rpcPort)
+	listener, lErr := net.Listen("tcp", RPCAddress)
+	if lErr != nil {
+		log.Fatal("Error listening to RPC address")
+	}
+	defer listener.Close()
+
+	for {
+		conn, connErr := listener.Accept()
+		if connErr != nil {
+			log.Fatal("Error connecting/accepting to RPC Server")
+		}
+		go rpc.ServeConn(conn)
+
 	}
 }
 

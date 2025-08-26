@@ -1,4 +1,4 @@
-package controller
+package dto
 
 type RequestPayload struct {
 	Action string      `json:"action"`
@@ -10,12 +10,6 @@ type RequestPayload struct {
 type AuthPayload struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
-}
-
-type LogPayload struct {
-	Name  string `json:"name"`
-	Data  string `json:"data"`
-	Level string `json:"level"`
 }
 
 type MailPayload struct {

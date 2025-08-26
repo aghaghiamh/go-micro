@@ -8,7 +8,7 @@ import (
 	"github.com/tsawler/toolbox"
 )
 
-func (app *App) WriteLog(wr http.ResponseWriter, r *http.Request) {
+func (app *HTTPServer) WriteLog(wr http.ResponseWriter, r *http.Request) {
 	var req WriteLogRequest
 	var tools toolbox.Tools
 

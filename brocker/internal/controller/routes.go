@@ -14,14 +14,16 @@ import (
 type App struct {
 	rabbitmqClient *messagebroker.Client
 	eventService   events.EventService
-	Logger *client.LoggerRPCClient
+	Logger         *client.LoggerRPCClient
+	LoggerGRPC     *client.LoggerGRPCClient
 }
 
-func NewApp(msgBrokerClient *messagebroker.Client, eventService events.EventService, logger *client.LoggerRPCClient) App {
+func NewApp(msgBrokerClient *messagebroker.Client, eventService events.EventService, logger *client.LoggerRPCClient, loggerGRPC *client.LoggerGRPCClient) App {
 	return App{
 		rabbitmqClient: msgBrokerClient,
 		eventService:   eventService,
-		Logger: logger,
+		Logger:         logger,
+		LoggerGRPC:     loggerGRPC,
 	}
 }
 
@@ -41,6 +43,7 @@ func (app *App) SetRouter() http.Handler {
 
 	mux.Post("/", app.Brocker)
 	mux.Post("/handle", app.HandleSubmission)
+	mux.Post("/logger-grpc", app.logGRPCItem)
 
 	return mux
 }

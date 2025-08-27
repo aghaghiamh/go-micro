@@ -9,6 +9,7 @@
                 <a id="brokerBtn" class="btn btn-outline-secondary" href="javascript:void(0);">Test Brocker</a>
                 <a id="authBtn" class="btn btn-outline-secondary" href="javascript:void(0);">Test Auth</a>
                 <a id="loggerBtn" class="btn btn-outline-secondary" href="javascript:void(0);">Test Logger</a>
+                <a id="loggerGBtn" class="btn btn-outline-secondary" href="javascript:void(0);">Test GRPC Logger</a>
                 <a id="mailerBtn" class="btn btn-outline-secondary" href="javascript:void(0);">Test Mailer</a>
                 <div id="output" class="mt-5" style="outline: 1px solid silver; padding: 2em;">
                     <span class="text-muted">Output shows here...</span>
@@ -37,6 +38,7 @@
         let brokerBtn =  document.getElementById("brokerBtn");
         let authBtn =  document.getElementById("authBtn");
         let loggerBtn = document.getElementById("loggerBtn");
+        let loggerGBtn = document.getElementById("loggerGBtn");
         let mailerBtn = document.getElementById("mailerBtn");
         let output = document.getElementById("output");
         let sent = document.getElementById("payload");
@@ -101,6 +103,38 @@
         })
         })
 
+        loggerGBtn.addEventListener("click", function() {
+        
+            const payload = {
+                name: "broker_service_log",
+                data: "Log the GRPC data through the broker service!",
+                level: "INFO"
+            }
+
+            const headers = new Headers();
+            headers.append("Content-Type", "application/json");
+        
+            const body = {
+                method: 'POST',
+                body: JSON.stringify(payload), 
+                headers: headers,
+            }
+
+            fetch("http://localhost:8080/logger-grpc", body)
+            .then((response) => response.json())
+            .then((data) => {
+                sent.innerHTML = JSON.stringify(payload, undefined, 4);
+                received.innerHTML = JSON.stringify(data, undefined, 4);
+                if (data.error) {
+                    output.innerHTML += `<br><strong>Error:</strong> ${data.error}`
+                } else {
+                    output.innerHTML += `<br><strong>Response from Broker service:</strong> ${data.messaeg}`
+                }
+            })
+            .catch((error) => {
+            output.innerHTML += "<br><br>Error: " + error;
+        })
+        })
 
         mailerBtn.addEventListener("click", function() {
         

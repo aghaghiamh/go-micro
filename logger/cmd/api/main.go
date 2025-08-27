@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"log-service/contracts"
 	"log-service/data/adaptor"
 	"log-service/data/repository"
 	"net"
@@ -13,11 +14,13 @@ import (
 	logsvc "log-service/logSvc"
 
 	"github.com/joho/godotenv"
+	"google.golang.org/grpc"
 )
 
 const (
-	rpcPort = "5001"
-	webPort = "80"
+	rpcPort  = "5001"
+	grpcPort = "50001"
+	webPort  = "80"
 )
 
 type Config struct {
@@ -51,6 +54,12 @@ func main() {
 	rpc.Register(rpcServer)
 	go rpcServer.serveRPC()
 
+	// Serve gRPC Server
+	grpcServer := &GRPCLogServer{
+		svc: logSvc,
+	}
+	go serveGRPC(grpcServer)
+
 	// start webserver
 	app.serve()
 }
@@ -82,6 +91,24 @@ func (r *RPCServer) serveRPC() {
 		}
 		go rpc.ServeConn(conn)
 
+	}
+}
+
+func serveGRPC(grpcLogServer *GRPCLogServer) {
+	gRPCAddress := fmt.Sprintf("0.0.0.0:%s", grpcPort)
+	listener, lErr := net.Listen("tcp", gRPCAddress)
+	if lErr != nil {
+		log.Fatal("Error listening to gRPC address")
+	}
+	defer listener.Close()
+
+	server := grpc.NewServer()
+
+	contracts.RegisterLogServiceServer(server, grpcLogServer)
+	log.Println("gRPC server start listening on %s port", grpcPort)
+
+	if sErr := server.Serve(listener); sErr != nil {
+		log.Fatal("Error serving gRPC server: ", sErr)
 	}
 }
 

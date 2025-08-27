@@ -7,6 +7,6 @@ type LogPayload struct {
 }
 
 type LogRPCRequestPayload struct {
-	Name  string
-	Data  string	
+	Name string
+	Data string
 }

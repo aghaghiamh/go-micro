@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 func (app *App) Brocker(wr http.ResponseWriter, r *http.Request) {
@@ -190,7 +191,30 @@ func (app *App) logItemRPC(wr http.ResponseWriter, logPayload *dto.LogPayload) {
 	}
 
 	payload := jsonResponse{
-		Error: false,
+		Error:   false,
+		Message: result,
+	}
+	app.writeJson(wr, payload, http.StatusOK)
+}
+
+func (app *App) logGRPCItem(wr http.ResponseWriter, r *http.Request) {
+	var logPayload dto.LogPayload
+	err := app.readJson(wr, r, &logPayload)
+	if err != nil {
+		app.errorJson(wr, err, http.StatusBadRequest)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+
+	result, err := app.LoggerGRPC.WriteLog(ctx, logPayload)
+	if err != nil {
+		app.errorJson(wr, err, http.StatusInternalServerError)
+		return
+	}
+
+	payload := jsonResponse{
+		Error:   false,
 		Message: result,
 	}
 	app.writeJson(wr, payload, http.StatusOK)

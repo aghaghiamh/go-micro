@@ -6,16 +6,19 @@ import (
 	"net/http"
 	"os"
 
+	rpcClient "brocker/internal/client"
 	"brocker/internal/controller"
 	"brocker/internal/events"
-	rpcClient "brocker/internal/client"
 	messagebroker "brocker/internal/message_broker"
 	"brocker/utils"
 
 	"github.com/joho/godotenv"
 )
 
-const webPort = 80
+const (
+	webPort  = 80
+	grpcPort = 50001
+)
 
 type Config struct {
 	rabbitmq  messagebroker.Config
@@ -51,7 +54,14 @@ func main() {
 		log.Fatal("Logger RPC client service is not responsive: ", loggerRPCErr)
 	}
 
-	app := controller.NewApp(client, *eventSvc, loggerRPCClient)
+	// GRPC Logger
+	grpcURI := fmt.Sprintf("logger-service:%d", grpcPort)
+	loggerGRPCClient, grpcErr := rpcClient.NewLoggerGRPCClient(grpcURI)
+	if grpcErr != nil {
+		log.Fatal("Logger RPC client service is not responsive: ", loggerRPCErr)
+	}
+	// TODO: separate app setup for clean-code purpose
+	app := controller.NewApp(client, *eventSvc, loggerRPCClient, loggerGRPCClient)
 
 	srv := http.Server{
 		Addr:    fmt.Sprintf(":%d", webPort),

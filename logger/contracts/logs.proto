@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package logs;
+
+option go_package = "/contracts";
+
+enum LogLevel {
+  LOG_LEVEL_UNSPECIFIED = 0;
+  LOG_LEVEL_INFO = 1;
+  LOG_LEVEL_WARN = 2;
+  LOG_LEVEL_ERROR = 3;
+}
+
+message Log {
+    string name = 1;
+    string data = 2;
+    LogLevel level = 3;
+}
+
+message LogRequest {
+    Log logEntry = 1;
+}
+
+message LogResponse {
+    string result = 1;
+}
+
+service LogService {
+    rpc WriteLog(LogRequest) returns (LogResponse);
+}

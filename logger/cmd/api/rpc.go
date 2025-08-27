@@ -18,7 +18,7 @@ func (r *RPCServer) LogInfo(payload WriteLogRPCRequest, resp *string) error {
 	if svcErr := r.svc.WriteLog(logEntry); svcErr != nil {
 		return fmt.Errorf("handler error: calling svc.WriteLog: %w", svcErr)
 	}
-	
+
 	*resp = fmt.Sprintf("Proccessed LogInfo rpc call with %s name", logEntry.Name)
 	return nil
 }

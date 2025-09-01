@@ -19,7 +19,7 @@ type MongoConfig struct {
 
 func ConnectToMongo(conf MongoConfig) (*mongo.Client, error) {
 	clientOptions := options.Client().ApplyURI(fmt.Sprintf(
-		"mongodb://%s/%s?authSource=admin", conf.MongoAddress, conf.DB))
+		"mongodb://%s/%s?authSource=admin&tls=true", conf.MongoAddress, conf.DB))
 	clientOptions.SetAuth(options.Credential{
 		Username: conf.Username,
 		Password: conf.Password,

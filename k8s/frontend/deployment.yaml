@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: aghaghia/frontend:1.0.0
+        ports:
+        - containerPort: 80
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: frontend-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  labels:
+    app: frontend
+spec:
+  selector:
+    app: frontend
+  ports:
+  - protocol: TCP
+    targetPort: 80 # ContainerPort
+    port: 8081 # ServicePort

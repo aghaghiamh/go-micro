@@ -87,7 +87,7 @@
                 headers: headers,
             }
 
-            fetch("http://localhost:8080/handle", body)
+            fetch({{print .BrokerUrl "/handle"}}, body)
             .then((response) => response.json())
             .then((data) => {
                 sent.innerHTML = JSON.stringify(payload, undefined, 4);
@@ -120,7 +120,7 @@
                 headers: headers,
             }
 
-            fetch("http://localhost:8080/logger-grpc", body)
+            fetch({{print .BrokerUrl "/logger-grpc"}}, body)
             .then((response) => response.json())
             .then((data) => {
                 sent.innerHTML = JSON.stringify(payload, undefined, 4);
@@ -157,7 +157,7 @@
                 headers: headers,
             }
 
-            fetch("http://localhost:8080/handle", body)
+            fetch({{print .BrokerUrl "/handle"}}, body)
             .then((response) => response.json())
             .then((data) => {
                 sent.innerHTML = JSON.stringify(payload, undefined, 4);
@@ -192,7 +192,7 @@
                 headers: headers,
             }
 
-            fetch("http://localhost:8080/handle", body)
+            fetch({{print .BrokerUrl "/handle"}}, body)
             .then((response) => response.json())
             .then((data) => {
                 sent.innerHTML = JSON.stringify(payload, undefined, 4);

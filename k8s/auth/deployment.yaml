@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth
+  labels:
+    app: auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+      - name: auth
+        image: aghaghia/auth-service:1.0.0
+        ports:
+        - containerPort: 80
+        envFrom:
+        - configMapRef:
+            name: auth-config
+      # imagePullSecrets:
+      # - name: my-docker-secret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  labels:
+    app: auth
+spec:
+  selector:
+    app: auth
+  ports:
+  - protocol: TCP
+    name: web-port
+    targetPort: 80 # ContainerPort
+    port: 80 # ServicePort

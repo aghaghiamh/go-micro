@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mailer
+  labels:
+    app: mailer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mailer
+  template:
+    metadata:
+      labels:
+        app: mailer
+    spec:
+      containers:
+      - name: mailer
+        image: aghaghia/mailer-service:1.0.0
+        ports:
+        - containerPort: 80
+        envFrom:
+        - configMapRef:
+            name: mailer-config
+        - secretRef:
+            name: mailer-secret
+      imagePullSecrets:
+      - name: my-docker-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mailer-service
+  labels:
+    app: mailer
+spec:
+  selector:
+    app: mailer
+  ports:
+  - protocol: TCP
+    targetPort: 80 # ContainerPort
+    port: 80 # ServicePort

@@ -44,7 +44,7 @@ go.work
 .ionide
 
 .DS_Store
-*.code-workspace
+# *.code-workspace
 
 # End of https://www.toptal.com/developers/gitignore/api/go,visualstudiocode
 
@@ -54,7 +54,9 @@ authApp
 loggerApp
 mailerApp
 listenerApp
+depFrontendApp
 db-data
 readme.md
+*secret.yaml
 *.http
 *.env

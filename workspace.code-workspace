@@ -1,0 +1,25 @@
+{
+	"folders": [
+		{
+			"path": "brocker"
+		},
+		{
+			"path": "front-end"
+		},
+		{
+			"path": "." // Now that we code in mono-repo style, I also added current dir for deployment files.
+		},
+		{
+			"path": "authentication"
+		},
+		{
+			"path": "logger"
+		},
+		{
+			"path": "mailer"
+		},
+		{
+			"path": "listener"
+		}
+	]
+}

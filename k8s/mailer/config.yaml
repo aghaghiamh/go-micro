@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mailer-config
+data:
+  MAIL_FROM_ADDRESS: "aghaghia.mh@gmail.com"
+  MAIL_FROM_NAME: "Aghaghia Mohammadi"
+  MAIL_HOST: mailhog-service
+  MAIL_PORT: "1025"

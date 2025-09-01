@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: broker-config
+data:
+  BACKOFF_RABBIT_MAX_RETRIES: "5"
+  RABBIT_HOST: rabbitmq
+  RABBIT_PORT: "5672"
